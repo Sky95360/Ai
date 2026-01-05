@@ -1,0 +1,316 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .chat-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin: 15px 0;
+            max-width: 80%;
+            clear: both;
+        }
+
+        .user-message {
+            float: right;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            float: left;
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px 20px 20px 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-right: auto;
+        }
+
+        .message-content {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #messageInput:focus {
+            border-color: #4f46e5;
+        }
+
+        #sendButton {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #sendButton:hover {
+            transform: translateY(-2px);
+        }
+
+        .ai-typing {
+            display: none;
+            padding: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+            background: #f1f5f9;
+        }
+
+        .feature {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .chat-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>🤖 Advanced AI Assistant</h1>
+            <p>Powered by Python & HTML - Like ChatGPT & DeepSeek</p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <h3>Smart Chat</h3>
+                <p>Natural conversations with AI</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast Responses</h3>
+                <p>Quick and accurate answers</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Secure</h3>
+                <p>Your data is protected</p>
+            </div>
+        </div>
+
+        <div class="chat-content" id="chatContent">
+            <div class="message ai-message">
+                <div class="message-content">
+                    Hello! I'm your AI assistant. How can I help you today? 😊
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+
+        <div class="ai-typing" id="typingIndicator">
+            AI is typing...
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" 
+                   id="messageInput" 
+                   placeholder="Type your message here..."
+                   autocomplete="off">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatContent = document.getElementById('chatContent');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Function to add message to chat
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+            
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(messageTime);
+            chatContent.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+
+        // Function to send message to backend
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, true);
+            messageInput.value = '';
+            
+            // Show typing indicator
+            typingIndicator.style.display = 'block';
+            chatContent.scrollTop = chatContent.scrollHeight;
+
+            try {
+                // Send to backend
+                const response = await fetch('http://localhost:5000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                // Hide typing indicator
+                typingIndicator.style.display = 'none';
+                
+                // Add AI response
+                if (data.status === 'success') {
+                    addMessage(data.response);
+                } else {
+                    addMessage("I'm sorry, I encountered an error. Please try again.");
+                }
+            } catch (error) {
+                typingIndicator.style.display = 'none';
+                addMessage("Oops! Can't connect to the server. Make sure the backend is running.");
+                console.error('Error:', error);
+            }
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Pre-populate with example questions
+        const exampleQuestions = [
+            "What is artificial intelligence?",
+            "How does machine learning work?",
+            "Can you explain neural networks?",
+            "What are the types of AI?",
+            "Tell me about deep learning"
+        ];
+
+        // Add example questions after a delay
+        setTimeout(() => {
+            addMessage("Try asking me: " + exampleQuestions[0]);
+        }, 2000);
+    </script>
+</body>
+  </html>

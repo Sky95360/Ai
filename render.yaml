@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ai-assistant
+    runtime: python
+    region: singapore  # or oregon/frankfurt
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.16
+    healthCheckPath: /api/status
+    autoDeploy: true
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

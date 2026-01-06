@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quillian AI | Universal Knowledge Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --quantum-blue: #4d8aff;
+            --ai-purple: #9d4edd;
+            --neural-green: #00ff9d;
+            --dark-space: #0a0e17;
+            --cosmic-dark: #050a14;
+            --starlight: #e2f1ff;
+            --gradient-ai: linear-gradient(135deg, var(--quantum-blue), var(--ai-purple));
+            --neon-glow: 0 0 15px var(--quantum-blue), 0 0 30px var(--ai-purple);
+            --particle-glow: 0 0 10px var(--neural-green);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--dark-space);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(77, 138, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(157, 78, 221, 0.15) 0%, transparent 40%),
+                linear-gradient(180deg, var(--cosmic-dark) 0%, var(--dark-space) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--starlight);
+            overflow-x: hidden;
+        }
+
+        /* Quantum Particles Animation */
+        .quantum-particle {
+            position: fixed;
+            width: 3px;
+            height: 3px;
+            background: var(--neural-green);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: quantum-float 20s infinite linear;
+            z-index: 0;
+        }
+
+        @keyframes quantum-float {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-100vh) translateX(100vw); opacity: 0; }
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 95vh;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            border: 1px solid rgba(77, 138, 255, 0.2);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(5, 10, 20, 0.9);
+            border-right: 1px solid rgba(77, 138, 255, 0.2);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(77, 138, 255, 0.3);
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: var(--gradient-ai);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-shadow: var(--neon-glow);
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--neural-green);
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(10, 14, 23, 0.7);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 25px 40px;
+            border-bottom: 1px solid rgba(77, 138, 255, 0.2);
+            background: rgba(5, 10, 20, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--starlight), var(--quantum-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--neural-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: var(--particle-glow);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 20px;
+            border-radius: 20px;
+            position: relative;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: var(--gradient-ai);
+            color: white;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 5px 20px rgba(77, 138, 255, 0.3);
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            background: rgba(20, 25, 40, 0.9);
+            border: 1px solid rgba(77, 138, 255, 0.3);
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .message-content {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .typing-indicator {
+            padding: 20px;
+            font-style: italic;
+            color: var(--neural-green);
+            font-family: 'IBM Plex Mono', monospace;
+            display: none;
+        }
+
+        /* Input Area */
+        .input-container {
+            padding: 25px 40px;
+            border-top: 1px solid rgba(77, 138, 255, 0.2);
+            background: rgba(5, 10, 20, 0.9);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 18px 25px;
+            background: rgba(20, 25, 40, 0.9);
+            border: 2px solid rgba(77, 138, 255, 0.3);
+            border-radius: 15px;
+            color: var(--starlight);
+            font-size: 1.1rem;
+            font-family: 'Quicksand', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        #messageInput:focus {
+            outline: none;
+            border-color: var(--quantum-blue);
+            box-shadow: var(--neon-glow);
+        }
+
+        #sendButton {
+            background: var(--gradient-ai);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #sendButton:hover {
+            transform: scale(1.1);
+            box-shadow: var(--neon-glow);
+        }
+
+        /* Suggestions */
+        .suggestions-container {
+            padding: 0 40px 25px;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .suggestion-btn {
+            background: rgba(77, 138, 255, 0.1);
+            border: 1px solid rgba(77, 138, 255, 0.3);
+            color: var(--starlight);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        .suggestion-btn:hover {
+            background: rgba(77, 138, 255, 0.2);
+            border-color: var(--quantum-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Capabilities */
+        .capabilities {
+            margin-top: 40px;
+        }
+
+        .capability-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(77, 138, 255, 0.05);
+            border-left: 3px solid var(--quantum-blue);
+            transition: all 0.3s ease;
+        }
+
+        .capability-item:hover {
+            background: rgba(77, 138, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .capability-icon {
+            color: var(--neural-green);
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid rgba(77, 138, 255, 0.2);
+            }
+            
+            .chat-header, .input-container, .suggestions-container {
+                padding: 20px;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Quantum Particles -->
+    <div id="quantumParticles"></div>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-container">
+                <div class="logo">QUILLIAN AI</div>
+                <div class="tagline">Quantum Intelligence System</div>
+            </div>
+
+            <div class="capabilities">
+                <h3 style="color: var(--quantum-blue); margin-bottom: 20px; font-family: 'Space Grotesk';">✦ Capabilities</h3>
+                
+                <div class="capability-item">
+                    <i class="fas fa-brain capability-icon"></i>
+                    <span>Deep Learning & Reasoning</span>
+                </div>
+                
+                <div class="capability-item">
+                    <i class="fas fa-code capability-icon"></i>
+                    <span>Programming & Development</span>
+                </div>
+                
+                <div class="capability-item">
+                    <i class="fas fa-globe capability-icon"></i>
+                    <span>Global Knowledge Base</span>
+                </div>
+                
+                <div class="capability-item">
+                    <i class="fas fa-rocket capability-icon"></i>
+                    <span>Real-time Processing</span>
+                </div>
+                
+                <div class="capability-item">
+                    <i class="fas fa-shield-alt capability-icon"></i>
+                    <span>Secure & Private</span>
+                </div>
+            </div>
+
+            <div class="status-info" style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(77, 138, 255, 0.2);">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>Quantum Core: ONLINE</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--neural-green); margin-top: 10px; font-family: 'IBM Plex Mono';">
+                    <i class="fas fa-bolt"></i> Response Time: &lt; 2s
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="header-title">
+                    <i class="fas fa-robot" style="margin-right: 10px;"></i>
+                    Universal Knowledge Assistant
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>READY</span>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatContent">
+                <div class="message ai-message">
+                    <div class="message-content">
+                        ✨ Welcome to <strong>Quillian AI</strong>! I'm your quantum-powered intelligence assistant. 
+                        Ask me anything about programming, science, technology, or any topic you're curious about!
+                    </div>
+                    <div class="message-time" id="initialTime"></div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <i class="fas fa-circle-notch fa-spin" style="margin-right: 10px;"></i>
+                Quantum processing...
+            </div>
+
+            <div class="suggestions-container">
+                <div style="color: var(--neural-green); font-family: 'Space Grotesk'; margin-bottom: 10px;">
+                    <i class="fas fa-lightbulb"></i> Quick Questions:
+                </div>
+                <div class="suggestions" id="suggestions">
+                    <!-- Suggestions will be added by JavaScript -->
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" 
+                           id="messageInput" 
+                           placeholder="Ask Quillian AI anything..." 
+                           autocomplete="off"
+                           autofocus>
+                    <button id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================
+        // QUANTUM PARTICLES
+        // ====================
+        function createParticles() {
+            const container = document.getElementById('quantumParticles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'quantum-particle';
+                
+                // Random positioning
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                
+                // Random animation
+                particle.style.animationDuration = (Math.random() * 30 + 20) + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // ====================
+        // AI CHAT FUNCTIONALITY
+        // ====================
+        const chatContent = document.getElementById('chatContent');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const suggestionsContainer = document.getElementById('suggestions');
+
+        // Set initial time
+        document.getElementById('initialTime').textContent = getCurrentTime();
+
+        // Example questions
+        const exampleQuestions = [
+            "What is artificial intelligence?",
+            "How does quantum computing work?",
+            "Explain neural networks in simple terms",
+            "What is Python and why is it popular?",
+            "How to build a website from scratch?",
+            "What are the latest advancements in AI?",
+            "How does blockchain technology work?",
+            "What is machine learning vs deep learning?",
+            "How to learn programming effectively?",
+            "What are the future predictions for technology?",
+            "Explain the concept of quantum entanglement",
+            "How do self-driving cars work?",
+            "What is the meaning of life?",
+            "How to start with machine learning?",
+            "What are the best programming practices?"
+        ];
+
+        // Initialize suggestions
+        function loadSuggestions() {
+            suggestionsContainer.innerHTML = '';
+            const selected = getRandomQuestions(4);
+            selected.forEach(question => {
+                const button = document.createElement('button');
+                button.className = 'suggestion-btn';
+                button.textContent = question;
+                button.onclick = () => sendSuggestion(question);
+                suggestionsContainer.appendChild(button);
+            });
+        }
+
+        function getRandomQuestions(count) {
+            const shuffled = [...exampleQuestions].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // Auto-detect question types
+        function analyzeQuestion(message) {
+            const programming = ['code', 'python', 'javascript', 'java', 'c++', 'programming', 'function', 'loop', 'variable', 'array', 'object'];
+            const tech = ['ai', 'machine learning', 'deep learning', 'neural', 'model', 'algorithm', 'quantum', 'blockchain', 'iot'];
+            const science = ['physics', 'chemistry', 'biology', 'space', 'universe', 'atom', 'molecule', 'evolution'];
+            const general = ['what is', 'how to', 'why', 'when', 'where', 'who', 'explain', 'define'];
+            
+            message = message.toLowerCase();
+            
+            if (programming.some(word => message.includes(word))) {
+                return 'programming';
+            } else if (tech.some(word => message.includes(word))) {
+                return 'tech';
+            } else if (science.some(word => message.includes(word))) {
+                return 'science';
+            } else if (general.some(word => message.includes(word))) {
+                return 'general';
+            }
+            return 'conversation';
+        }
+
+        // Add typing indicator with dots
+        function showTyping() {
+            const dots = ['', '.', '..', '...'];
+            let i = 0;
+            const interval = setInterval(() => {
+                typingIndicator.textContent = `Quantum processing${dots[i]}`;
+                i = (i + 1) % dots.length;
+            }, 300);
+            return interval;
+        }
+
+        // Get current time
+        function getCurrentTime() {
+            return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // Add message to chat
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            m
